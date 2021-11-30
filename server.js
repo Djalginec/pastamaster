@@ -12,7 +12,6 @@ const PORT = 8080;
 const HOST = '0.0.0.0';
 
 
-
 // App
 
 const app = express();
@@ -52,18 +51,20 @@ app.get('/admin', auth, (req, res) => {
 app.post('/admin', urlencodedParser, (req, res) => {
     const {email, password} = req.body
     fs.readFile('views/write-body.txt', 'utf8' , (err, data) => {
-
         if (!data.includes(email) || !data.includes(password))  {
             console.log(data)
             return res.redirect('/')
-        } else {
+        } else if (req.body.email === "admin@pasta.com" && password) {
+            console.log(password)
             req.session.admin = true
             req.session.user = req.body.email
-
             res.render('./admin/admin', {user: req.session.user})
+        } else {
+            return res.redirect('/')
         }
     });
 });
+
 
 app.get ('/logout', (req, res) => {
     req.session.destroy(err => {
